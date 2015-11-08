@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="nixfifty_trash_can" title="NixFifty: Move to Trash Can" version_string="1.0.5a" version_id="7" url="http://xenforo.com/community/resources/move-to-trash-can.2703/" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates/>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="NixFifty_TrashCan_Listener_Listen" callback_method="loadClassController" active="1" hint="" description=""/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="NixFifty_TrashCan_Listener_Listen" callback_method="loadClassModel" active="1" hint="" description="Listens for the XenForo_Model_InlineMod_Thread class."/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <option option_id="nixfifty_trash_can" edit_format="callback" data_type="integer" can_backup="1">
+      <default_value></default_value>
+      <edit_format_params>XenForo_Option_ForumChooser::renderOption</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="basicBoard" display_order="510"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions>
+      <permission permission_group_id="forum" permission_id="softDeleteTrashedThreads" permission_type="flag" default_value="unset" interface_group_id="forumModeratorPermissions" display_order="1310"/>
+      <permission permission_group_id="forum" permission_id="trashThreads" permission_type="flag" default_value="unset" interface_group_id="forumModeratorPermissions" display_order="1300"/>
+    </permissions>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="are_you_sure_you_want_to_trash_x_threads" version_id="1" version_string="1.0.0"><![CDATA[Are you sure you want to trash {count} thread(s)?]]></phrase>
+    <phrase title="inline_moderation_trash_threads" version_id="1" version_string="1.0.0"><![CDATA[Inline Moderation - Trash Threads]]></phrase>
+    <phrase title="just_move_thread" version_id="4" version_string="1.0.4"><![CDATA[Just move thread]]></phrase>
+    <phrase title="move_to_trash_can_and_remove_from_public_view" version_id="5" version_string="1.0.4"><![CDATA[Move to Trash Can and remove from public view]]></phrase>
+    <phrase title="option_nixfifty_trash_can" version_id="1" version_string="1.0.0"><![CDATA[Trash Can Node]]></phrase>
+    <phrase title="option_nixfifty_trash_can_explain" version_id="1" version_string="1.0.0"><![CDATA[Specify the node that will be used as the Trash Can. This option needs to be set to use the 'Move to Trash Can' feature.]]></phrase>
+    <phrase title="permission_forum_softDeleteTrashedThreads" version_id="4" version_string="1.0.4"><![CDATA[Soft delete threads when trashing]]></phrase>
+    <phrase title="permission_forum_trashThreads" version_id="4" version_string="1.0.4"><![CDATA[Trash threads by anyone]]></phrase>
+    <phrase title="please_confirm_that_you_want_to_trash_thread" version_id="4" version_string="1.0.4"><![CDATA[Please confirm that you want to move this thread to the Trash Can.]]></phrase>
+    <phrase title="selecting_this_option_will_only_move_item_not_delete" version_id="5" version_string="1.0.4"><![CDATA[Selecting this option will only move the item to the trash can node and not soft delete it.]]></phrase>
+    <phrase title="trash" version_id="1" version_string="1.0.0"><![CDATA[Trash]]></phrase>
+    <phrase title="trash_can_node_not_set" version_id="1" version_string="1.0.0"><![CDATA[The Trash Can node has not been set. Please remedy this in the Admin Control Panel.]]></phrase>
+    <phrase title="trash_thread" version_id="1" version_string="1.0.0"><![CDATA[Trash Thread]]></phrase>
+    <phrase title="trash_threads" version_id="2" version_string="1.0.2"><![CDATA[Trash Threads]]></phrase>
+    <phrase title="trash_type" version_id="4" version_string="1.0.4"><![CDATA[Trash Type]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates>
+    <template title="helper_trash_type_unit" version_id="5" version_string="1.0.4"><![CDATA[<dl class="ctrlUnit">
+	<dt>{xen:phrase trash_type}:</dt>
+	<dd>
+		<ul>
+			<li><label for="ctrl_soft_delete">
+				<input type="radio" name="trash_type" id="ctrl_soft_delete" value="0" class="Disabler" checked="checked" /> {xen:phrase move_to_trash_can_and_remove_from_public_view}</label>
+				<ul id="ctrl_soft_delete_Disabler">
+					<li><input type="text" name="reason" class="textCtrl" placeholder="{xen:phrase reason}..." /></li>
+				</ul>
+				<p class="hint">{xen:phrase item_will_remain_viewable_by_moderators_and_may_be_restored_at_later}</p>
+			</li>
+			<li><label for="ctrl_just_move">
+				<input type="radio" name="trash_type" id="ctrl_just_move" value="1" /> {xen:phrase just_move_thread}</label>
+				<p class="hint">{xen:phrase selecting_this_option_will_only_move_item_not_delete}</p></li>
+		</ul>
+	</dd>
+</dl>]]></template>
+    <template title="inline_mod_thread_trash" version_id="4" version_string="1.0.4"><![CDATA[<xen:title>{xen:phrase inline_moderation_trash_threads}</xen:title>
+
+<form action="{xen:link 'inline-mod/thread/trash'}" method="post" class="xenForm formOverlay">
+	
+	<xen:if is="{$visitor.permissions.forum.softDeleteTrashedThreads}">
+		<xen:include template="helper_trash_type_unit" />
+	<xen:else />
+		<p>{xen:phrase are_you_sure_you_want_to_trash_x_threads, 'count={$threadCount}'}</p>
+		<input type="hidden" name="trash_type" value="1" />
+	</xen:if>
+	
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd><input type="submit" name="save" value="{xen:phrase trash_threads}" accesskey="s" class="button primary" /></dd>
+	</dl>
+
+	<xen:foreach loop="$threadIds" value="$threadId">
+		<input type="hidden" name="threads[]" value="{$threadId}" />
+	</xen:foreach>
+
+	<input type="hidden" name="_xfConfirm" value="1" />
+	<input type="hidden" name="redirect" value="{$redirect}" />
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+</form>]]></template>
+    <template title="trash_thread" version_id="4" version_string="1.0.4"><![CDATA[<xen:title>{xen:phrase trash_thread}: {xen:helper threadPrefix, $thread, escaped}{$thread.title}</xen:title>
+<xen:h1>{xen:phrase trash_thread}: {xen:helper threadPrefix, $thread}{$thread.title}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:link full:threads, $thread}">{xen:helper threadPrefix, $thread}{$thread.title}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:container var="$searchBar.thread"><xen:include template="search_bar_thread_only" /></xen:container>
+<xen:container var="$searchBar.forum"><xen:include template="search_bar_forum_only" /></xen:container>
+
+<form action="{xen:link 'threads/trash', $thread}" method="post" class="xenForm formOverlay">
+	
+	<xen:if is="{$visitor.permissions.forum.softDeleteTrashedThreads}">
+		<xen:include template="helper_trash_type_unit" />
+	<xen:else />
+		{xen:phrase please_confirm_that_you_want_to_trash_thread}
+		<input type="hidden" name="trash_type" value="1" />
+	</xen:if>
+
+	<dl class="ctrlUnit submitUnit">
+		<dt></dt>
+		<dd><input type="submit" value="{xen:phrase trash_thread}" class="button primary" /></dd>
+	</dl>
+
+	<input type="hidden" name="_xfConfirm" value="1" />
+	<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+</form>]]></template>
+  </templates>
+  <public_template_modifications>
+    <modification template="inline_mod_controls" modification_key="inlineModTrash" description="Add Trash Threads to Inline Moderation." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:if is="{$inlineModOptions.approve}"><input type="submit" class="button" value="{xen:phrase approve}" name="approve" /></xen:if>]]></find>
+      <replace><![CDATA[$0
+<xen:if is="{$visitor.permissions.forum.trashThreads} AND {$controllerName} == 'XenForo_ControllerPublic_Forum'"><input type="submit" class="button" value="{xen:phrase trash}" name="trash" /></xen:if>]]></replace>
+    </modification>
+    <modification template="thread_view" modification_key="threadViewTrashCan" description="Adds Move to Trash Can option to Thread Tools." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:if is="{$canDeleteThread}">
+								<li><a href="{xen:link 'threads/delete', $thread}" class="OverlayTrigger">{xen:phrase delete_thread}</a></li>
+							</xen:if>]]></find>
+      <replace><![CDATA[$0
+<xen:if is="{$visitor.permissions.forum.trashThreads} AND {$controllerName} == 'XenForo_ControllerPublic_Thread'">
+<li><a href="{xen:link 'threads/trash', $thread}" class="OverlayTrigger">{xen:phrase trash_thread}</a></li>
+</xen:if>]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
